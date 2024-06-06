@@ -6,6 +6,7 @@ import { connectToDB } from "./config/db.js";
 import { notFound, errorHandler } from "./middlewares/index.js";
 import homeRoute from "./routes/homeRoute.js";
 import authRoute from "./routes/authRoute.js";
+import userRoutes from "./routes/userRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -17,6 +18,7 @@ app.use(express.json());
 // routes
 app.use("/", homeRoute);
 app.use("/jwt", authRoute);
+app.use("/users", userRoutes);
 
 // error handler
 app.use(notFound);
