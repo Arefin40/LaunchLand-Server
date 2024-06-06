@@ -5,6 +5,7 @@ import corsOptions from "./config/corsOptions.js";
 import { connectToDB } from "./config/db.js";
 import { notFound, errorHandler } from "./middlewares/index.js";
 import homeRoute from "./routes/homeRoute.js";
+import authRoute from "./routes/authRoute.js";
 
 dotenv.config();
 const app = express();
@@ -15,6 +16,7 @@ app.use(express.json());
 
 // routes
 app.use("/", homeRoute);
+app.use("/jwt", authRoute);
 
 // error handler
 app.use(notFound);
