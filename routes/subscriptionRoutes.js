@@ -1,5 +1,5 @@
 import express from "express";
-import { verifyAdmin, verifyToken } from "../middlewares/index.js";
+import { verifyRole, verifyToken } from "../middlewares/index.js";
 import User from "../models/User.js";
 import Payment from "../models/Payment.js";
 import Subscription from "../models/Subscription.js";
@@ -31,7 +31,7 @@ router.post("/", verifyToken, async (req, res) => {
 });
 
 // get all subscriptions
-router.get("/", verifyToken, verifyAdmin, async (req, res) => {
+router.get("/", verifyToken, verifyRole("admin"), async (req, res) => {
    const subscriptions = await Subscription.find().lean();
    res.status(200).send(subscriptions);
 });

@@ -1,25 +1,25 @@
 import express from "express";
 import * as Coupon from "../controllers/Coupon.js";
-import { verifyToken, verifyAdmin } from "../middlewares/index.js";
+import { verifyToken, verifyRole } from "../middlewares/index.js";
 
 const router = express.Router();
 
 // create a coupon
-router.post("/", verifyToken, verifyAdmin, Coupon.create);
+router.post("/", verifyToken, verifyRole("admin"), Coupon.create);
 
 // apply coupon
 router.get("/apply", verifyToken, Coupon.apply);
 
 // get all coupons
-router.get("/", verifyToken, verifyAdmin, Coupon.getAll);
+router.get("/", verifyToken, verifyRole("admin"), Coupon.getAll);
 
 // get coupon details
-router.get("/:id", verifyToken, verifyAdmin, Coupon.get);
+router.get("/:id", verifyToken, verifyRole("admin"), Coupon.get);
 
 // update coupon
-router.patch("/:id", verifyToken, verifyAdmin, Coupon.update);
+router.patch("/:id", verifyToken, verifyRole("admin"), Coupon.update);
 
 // delete coupon
-router.delete("/:id", verifyToken, verifyAdmin, Coupon.remove);
+router.delete("/:id", verifyToken, verifyRole("admin"), Coupon.remove);
 
 export default router;

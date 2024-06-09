@@ -1,6 +1,6 @@
 import express from "express";
 import * as User from "../controllers/User.js";
-import { verifyToken, verifyAdmin } from "../middlewares/index.js";
+import { verifyToken, verifyRole } from "../middlewares/index.js";
 
 const router = express.Router();
 
@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/", User.create);
 
 // get all users
-router.get("/", verifyToken, verifyAdmin, User.getAll);
+router.get("/", verifyToken, verifyRole("admin"), User.getAll);
 
 // get a single user by id
 router.get("/:id", verifyToken, User.getById);
@@ -20,6 +20,6 @@ router.get("/email/:email", verifyToken, User.getByEmail);
 router.patch("/:id", verifyToken, User.update);
 
 // change user role
-router.patch("/make/:id", verifyToken, verifyAdmin, User.changeRole);
+router.patch("/make/:id", verifyToken, verifyRole("admin"), User.changeRole);
 
 export default router;
