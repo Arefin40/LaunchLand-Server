@@ -7,6 +7,7 @@ import { notFound, errorHandler } from "./middlewares/index.js";
 import homeRoute from "./routes/homeRoute.js";
 import authRoute from "./routes/authRoute.js";
 import userRoutes from "./routes/userRoutes.js";
+import couponRoutes from "./routes/couponRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use("/", homeRoute);
 app.use("/jwt", authRoute);
 app.use("/users", userRoutes);
+app.use("/coupons", couponRoutes);
 
 // error handler
 app.use(notFound);
