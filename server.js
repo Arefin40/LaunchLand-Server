@@ -8,6 +8,7 @@ import homeRoute from "./routes/homeRoute.js";
 import authRoute from "./routes/authRoute.js";
 import userRoutes from "./routes/userRoutes.js";
 import couponRoutes from "./routes/couponRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -21,6 +22,7 @@ app.use("/", homeRoute);
 app.use("/jwt", authRoute);
 app.use("/users", userRoutes);
 app.use("/coupons", couponRoutes);
+app.use("/payments", paymentRoutes);
 
 // error handler
 app.use(notFound);
