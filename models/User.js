@@ -25,6 +25,10 @@ const UserSchema = new mongoose.Schema(
          type: Boolean,
          default: false,
       },
+      productsLaunched: {
+         type: Number,
+         default: 0,
+      },
    },
    { versionKey: false, timestamps: true, autoIndex: true }
 );
