@@ -39,8 +39,6 @@ export const getAll = request(async (req, res) => {
       query = { tags: { $in: regexTags } };
    }
 
-   console.log(query);
-
    // fetch products with pagination
    const products = await Product.find(query)
       .populate("owner", "name email photoUrl")
