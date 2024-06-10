@@ -10,6 +10,9 @@ router.post("/", verifyToken, Product.create);
 // get all products with pagination
 router.get("/", Product.getAll);
 
+// get my products
+router.get("/myproducts", verifyToken, Product.getMyProducts);
+
 // get latest featured products
 router.get("/featured", Product.getFeatured);
 
@@ -45,5 +48,8 @@ router.patch("/:id/upvote", verifyToken, Product.upvote);
 
 // report a product
 router.post("/:id/report", verifyToken, Product.report);
+
+// settle a report
+router.delete("/:reportId/settle", verifyToken, verifyRole("moderator"), Product.settleReport);
 
 export default router;

@@ -16,7 +16,7 @@ export const create = request(async (req, res) => {
 
    // Add this product and update the user's product count
    const product = await Product.create({ ...productDetails, owner: user._id });
-   await User.findByIdAndUpdate(userId, { $inc: { productsLaunched: 1 } });
+   await User.findByIdAndUpdate(user._id, { $inc: { productsLaunched: 1 } });
 
    res.status(201).send({ success: true, message: "Product added successfully", data: product });
 });
@@ -28,8 +28,20 @@ export const getAll = request(async (req, res) => {
    const limit = parseInt(req.query.limit) || 6;
    const startIndex = (page - 1) * limit;
 
+   let query = {};
+
+   // if tags are provided generate case-insensitive regex patterns for each tag
+   const { tags } = req.query;
+   if (tags) {
+      const tagsArray = tags.split(",").map((tag) => tag.trim());
+      const regexTags = tagsArray.map((tag) => new RegExp(tag, "i"));
+      query = { tags: { $in: regexTags } };
+   }
+
+   console.log(query);
+
    // fetch products with pagination
-   const products = await Product.find()
+   const products = await Product.find(query)
       .populate("owner", "name email photoUrl")
       .lean()
       .sort({ createdAt: -1 })
@@ -37,12 +49,22 @@ export const getAll = request(async (req, res) => {
       .limit(limit);
 
    // pagination metadata
-   const total = await Product.countDocuments();
+   const total = await Product.countDocuments(query);
    const pages = Math.ceil(total / limit);
    const count = products.length;
 
    // products with pagination metadata
    res.status(200).send({ success: true, count, total, page, pages, products });
+});
+
+// get my products
+export const getMyProducts = request(async (req, res) => {
+   const user = await User.findOne({ email: req.user.email }).select("_id");
+   const products = await Product.find({ owner: user._id })
+      .populate("owner", "name email")
+      .lean()
+      .sort({ createdAt: -1 });
+   res.status(200).send(products);
 });
 
 // get product details
@@ -83,9 +105,8 @@ export const remove = request(async (req, res) => {
 
    const user = await User.findOne({ email: req.user?.email });
 
-   // only product owner or a moderator can delete a product
-   if (!(product.owner.equals(user._id) || user.role === "moderator"))
-      throw new ErrorResponse(403, "Forbidden access");
+   // check if the product is owned by the user
+   if (!product.owner.equals(user._id)) throw new ErrorResponse(403, "Forbidden access");
 
    await Product.deleteOne({ _id: req.params.id });
    res.status(200).send({ success: true, message: "Product deleted successfully" });
@@ -209,6 +230,19 @@ export const report = request(async (req, res) => {
 
    const report = await Report.create({ product: product._id, reportedBy: user._id });
    res.status(200).send({ success: true, message: "Product reported successfully", data: report });
+});
+
+// settle a report
+export const settleReport = request(async (req, res) => {
+   // Check if the report exists
+   const report = await Report.findById(req.params.reportId);
+   if (!report) throw new ErrorResponse(404, "Report not found");
+
+   // delete both report and the product
+   await Product.deleteOne({ _id: report.product });
+   await Report.deleteOne({ _id: req.params.reportId });
+
+   res.status(200).send({ success: true, message: "Report settled successfully" });
 });
 
 // get all product reports
