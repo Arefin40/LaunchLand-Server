@@ -37,6 +37,13 @@ export const remove = request(async (req, res) => {
    res.status(200).send({ success: true, message: "Coupon deleted successfully" });
 });
 
+// get valid coupons
+export const getValidCoupons = request(async (req, res) => {
+   const currentDate = new Date();
+   const validCoupons = await Coupon.find({ expiryDate: { $gt: currentDate } });
+   res.status(200).json(validCoupons);
+});
+
 // apply coupon
 export const apply = request(async (req, res) => {
    const { code, amount } = req.query;

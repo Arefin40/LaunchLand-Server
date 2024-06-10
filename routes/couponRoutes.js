@@ -13,6 +13,9 @@ router.get("/apply", verifyToken, Coupon.apply);
 // get all coupons
 router.get("/", verifyToken, verifyRole("admin"), Coupon.getAll);
 
+// get all valid coupons (not expired)
+router.get("/valid", Coupon.getValidCoupons);
+
 // get coupon details
 router.get("/:id", verifyToken, verifyRole("admin"), Coupon.get);
 
