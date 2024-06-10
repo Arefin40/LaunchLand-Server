@@ -1,6 +1,7 @@
 import Product from "../models/Product.js";
 import User from "../models/User.js";
 import Report from "../models/Report.js";
+import Review from "../models/Review.js";
 import { ErrorResponse, request } from "../utils/index.js";
 
 // create a product
@@ -215,6 +216,39 @@ export const getProductQueue = request(async (req, res) => {
       { $sort: { statusOrder: 1, createdAt: -1 } },
    ]);
    res.status(200).send({ success: true, count: products.length, data: products });
+});
+
+// review on a product
+export const postReview = request(async (req, res) => {
+   const user = await User.findOne({ email: req?.user?.email });
+
+   // check if the product exists
+   const product = await Product.findById(req.params.id);
+   if (!product) throw new ErrorResponse(404, "Product not found");
+
+   // check if the product is owned by the user
+   if (product.owner.equals(user._id)) throw new ErrorResponse(400, "Cannot review own product");
+
+   const review = await Review.create({
+      user: user._id,
+      product: product._id,
+      rating: req.body.rating,
+      comment: req.body.comment,
+   });
+   res.status(201).send({ success: true, message: "Review posted successfully", data: review });
+});
+
+// get all reviews posted for this product
+export const getAllReviews = request(async (req, res) => {
+   // check if the product exists
+   const product = await Product.findById(req.params.id);
+   if (!product) throw new ErrorResponse(404, "Product not found");
+
+   const reviews = await Review.find({ product: req.params.id }).populate(
+      "user",
+      "-_id name photoUrl"
+   );
+   res.status(200).send(reviews);
 });
 
 // report a product

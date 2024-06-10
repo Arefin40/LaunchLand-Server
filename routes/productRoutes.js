@@ -46,6 +46,12 @@ router.patch("/:id/feature", verifyToken, verifyRole("moderator"), Product.featu
 // upvote a product
 router.patch("/:id/upvote", verifyToken, Product.upvote);
 
+// post a review on this product
+router.post("/:id/reviews", verifyToken, Product.postReview);
+
+// get all reviews posted for this product
+router.get("/:id/reviews", Product.getAllReviews);
+
 // report a product
 router.post("/:id/report", verifyToken, Product.report);
 
